@@ -1,12 +1,14 @@
 import { prisma } from '@/server/db';
 import { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import { inferAsyncReturnType } from '@trpc/server';
-import { auth as getAuth } from '@clerk/nextjs';
-import { GetServerSidePropsContext } from 'next';
-import { NextRequest } from 'next/server';
+import {
+  SignedInAuthObject,
+  SignedOutAuthObject,
+  getAuth,
+} from '@clerk/nextjs/server';
 
 type CreateContextOptions = {
-  auth: any | null;
+  auth: SignedInAuthObject | SignedOutAuthObject;
 };
 
 export const createContextInner = (opts: CreateContextOptions) => {
@@ -17,7 +19,7 @@ export const createContextInner = (opts: CreateContextOptions) => {
 };
 
 export const createContext = (opts: CreateNextContextOptions) => {
-  const auth = getAuth();
+  const auth = getAuth(opts.req);
   return createContextInner({
     auth,
   });
